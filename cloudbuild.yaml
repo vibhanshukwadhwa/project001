@@ -1,0 +1,25 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/project001-445020/bank-campaign-model', '.']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/project001-445020/bank-campaign-model']
+
+- name: 'gcr.io/project001-445020/bank-campaign-model'
+  entrypoint: 'bash'
+  args:
+   - '-c'
+   - |
+      python -m pytest
+
+- name: 'gcr.io/cloud-builders/git'
+  args: ['clone', 'https://github.com/vibhanshukwadhwa/project001.git']
+
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp', 'project001/bank_campaign_model_training.py', 'gs://us-central1-project001-airf-cf15475f-bucket/dags']
+
+images:
+- 'gcr.io/project001-445020/bank-campaign-model'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
